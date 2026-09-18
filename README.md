@@ -1,12 +1,6 @@
 # xmip-core-authorize-cedar
 
-Authorize by cedar: decides by a Cedar policy set, evaluated with the Cedar engine; a transport-layer policy. A technology of
-[xmip-core-authorize](https://github.com/IlleNilsson/xmip-core-authorize).
-
-Declared and not yet written; `architecture.toml` carries the maturity. When
-it is written it implements `Authorizer`, one mechanism at one gate (ADR-0050).
-What it may depend on is `repository-model.md` section 4 and ADR-0044: its
-capability, and no sibling.
+Authorization by a Cedar policy set evaluated with the Cedar engine: the identity is the principal, the attempt's action and artifact the action and the resource, the facts the context; an explicit forbid is a denial, no matching policy no opinion. A technology of [xmip-core-authorize](https://github.com/IlleNilsson/xmip-core-authorize).
 
 ## Toolchain
 
