@@ -7,7 +7,7 @@ use serde_json::{Map, Value, json};
 use std::str::FromStr;
 use xcore::Assurance;
 
-/// The entity type of a principal: `Xmip::Identity::"CN=partner-x.example"`.
+/// The entity type of a principal: `Xmip::Identity::"CN=party-x.example"`.
 pub const IDENTITY: &str = "Xmip::Identity";
 
 /// The entity type a principal is `in` where its identity resolved to a
@@ -161,12 +161,12 @@ mod tests {
     use context::Alignment;
     use xcore::{Established, PartyId, mechanism};
 
-    fn partner() -> IdentityFacts {
+    fn party() -> IdentityFacts {
         IdentityFacts::evaluate(
             Alignment::None,
             AuthenticatedIdentity::new(
                 mechanism::mutual_tls(),
-                "CN=partner-x.example",
+                "CN=party-x.example",
                 Established::Passed,
                 Verified::Proven,
             )
@@ -179,12 +179,12 @@ mod tests {
 
     #[test]
     fn the_identity_is_the_principal_the_action_the_action_the_artifact_the_resource() {
-        let attempt = Attempt::new(Action::Receive, "partner-x");
-        let (request, entities) = request(&partner(), &attempt).expect("a request");
+        let attempt = Attempt::new(Action::Receive, "party-x");
+        let (request, entities) = request(&party(), &attempt).expect("a request");
 
         assert_eq!(
             request.principal().expect("a principal").to_string(),
-            r#"Xmip::Identity::"CN=partner-x.example""#
+            r#"Xmip::Identity::"CN=party-x.example""#
         );
         assert_eq!(
             request.action().expect("an action").to_string(),
@@ -192,11 +192,11 @@ mod tests {
         );
         assert_eq!(
             request.resource().expect("a resource").to_string(),
-            r#"Xmip::Artifact::"partner-x""#
+            r#"Xmip::Artifact::"party-x""#
         );
         assert!(entities.is_ancestor_of(
             &uid(PARTY, "00000000-0000-0000-0000-000000000007"),
-            &uid(IDENTITY, "CN=partner-x.example")
+            &uid(IDENTITY, "CN=party-x.example")
         ));
     }
 
@@ -205,7 +205,7 @@ mod tests {
         let attempt = Attempt::new(Action::Send, "Billing")
             .on_contract("X12-850")
             .at(1_700_000_000 * 1_000_000_000);
-        let context = facts(&partner(), &attempt);
+        let context = facts(&party(), &attempt);
 
         assert_eq!(context["mechanism"], "mutual-tls");
         assert_eq!(context["class"], "highAssurance");
