@@ -163,11 +163,11 @@ mod tests {
         when { context.evidence.clearance == "secret" };
     "#;
 
-    fn partner(evidence: &[(&str, &str)]) -> IdentityFacts {
+    fn party(evidence: &[(&str, &str)]) -> IdentityFacts {
         let identity = evidence.iter().fold(
             AuthenticatedIdentity::new(
                 mechanism::mutual_tls(),
-                "CN=partner-x.example",
+                "CN=party-x.example",
                 Established::Passed,
                 Verified::Proven,
             )
@@ -187,12 +187,12 @@ mod tests {
         let policy = cedar();
 
         assert_eq!(
-            policy.decide(&partner(&[]), &Attempt::new(Action::Receive, "partner-x")),
+            policy.decide(&party(&[]), &Attempt::new(Action::Receive, "party-x")),
             Some(Decision::Allowed)
         );
         assert_eq!(
             policy.decide(
-                &partner(&[("department", "billing")]),
+                &party(&[("department", "billing")]),
                 &Attempt::new(Action::Send, "Billing")
             ),
             Some(Decision::Allowed)
@@ -207,7 +207,7 @@ mod tests {
         // Cedar a forbid beats every permit.
         let decision = cedar()
             .decide(
-                &partner(&[("department", "billing"), ("employment", "contractor")]),
+                &party(&[("department", "billing"), ("employment", "contractor")]),
                 &Attempt::new(Action::Send, "Billing"),
             )
             .expect("an opinion");
@@ -221,13 +221,13 @@ mod tests {
     #[test]
     fn no_matching_policy_is_no_opinion_and_not_cedars_default_deny() {
         assert_eq!(
-            cedar().decide(&partner(&[]), &Attempt::new(Action::Send, "Shipping")),
+            cedar().decide(&party(&[]), &Attempt::new(Action::Send, "Shipping")),
             None
         );
         assert_eq!(
             Cedar::load("")
                 .expect("an empty set parses")
-                .decide(&partner(&[]), &Attempt::new(Action::Receive, "partner-x")),
+                .decide(&party(&[]), &Attempt::new(Action::Receive, "party-x")),
             None
         );
     }
@@ -255,7 +255,7 @@ mod tests {
     #[test]
     fn a_policy_that_fails_to_evaluate_where_nothing_permits_is_a_denial_saying_so() {
         let decision = cedar()
-            .decide(&partner(&[]), &Attempt::new(Action::Process, "Approval"))
+            .decide(&party(&[]), &Attempt::new(Action::Process, "Approval"))
             .expect("an opinion");
 
         let Decision::Denied { by, reason } = decision else {
