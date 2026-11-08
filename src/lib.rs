@@ -187,13 +187,13 @@ mod tests {
         let policy = cedar();
 
         assert_eq!(
-            policy.decide(&party(&[]), &Attempt::new(Action::Receive, "party-x")),
+            policy.decide(&party(&[]), &Attempt::now(Action::Receive, "party-x")),
             Some(Decision::Allowed)
         );
         assert_eq!(
             policy.decide(
                 &party(&[("department", "billing")]),
-                &Attempt::new(Action::Send, "Billing")
+                &Attempt::now(Action::Send, "Billing")
             ),
             Some(Decision::Allowed)
         );
@@ -208,7 +208,7 @@ mod tests {
         let decision = cedar()
             .decide(
                 &party(&[("department", "billing"), ("employment", "contractor")]),
-                &Attempt::new(Action::Send, "Billing"),
+                &Attempt::now(Action::Send, "Billing"),
             )
             .expect("an opinion");
 
@@ -221,13 +221,13 @@ mod tests {
     #[test]
     fn no_matching_policy_is_no_opinion_and_not_cedars_default_deny() {
         assert_eq!(
-            cedar().decide(&party(&[]), &Attempt::new(Action::Send, "Shipping")),
+            cedar().decide(&party(&[]), &Attempt::now(Action::Send, "Shipping")),
             None
         );
         assert_eq!(
             Cedar::load("")
                 .expect("an empty set parses")
-                .decide(&party(&[]), &Attempt::new(Action::Receive, "party-x")),
+                .decide(&party(&[]), &Attempt::now(Action::Receive, "party-x")),
             None
         );
     }
@@ -255,7 +255,7 @@ mod tests {
     #[test]
     fn a_policy_that_fails_to_evaluate_where_nothing_permits_is_a_denial_saying_so() {
         let decision = cedar()
-            .decide(&party(&[]), &Attempt::new(Action::Process, "Approval"))
+            .decide(&party(&[]), &Attempt::now(Action::Process, "Approval"))
             .expect("an opinion");
 
         let Decision::Denied { by, reason } = decision else {

@@ -171,7 +171,7 @@ mod tests {
 
     #[test]
     fn the_identity_is_the_principal_the_action_the_action_the_artifact_the_resource() {
-        let attempt = Attempt::new(Action::Receive, "party-x");
+        let attempt = Attempt::now(Action::Receive, "party-x");
         let (request, entities) = request(&party(), &attempt).expect("a request");
 
         assert_eq!(
@@ -194,9 +194,8 @@ mod tests {
 
     #[test]
     fn the_facts_are_the_context_and_the_clock_is_in_seconds() {
-        let attempt = Attempt::new(Action::Send, "Billing")
-            .on_contract("X12-850")
-            .at(1_700_000_000 * 1_000_000_000);
+        let attempt = Attempt::new(Action::Send, "Billing", 1_700_000_000 * 1_000_000_000)
+            .on_contract("X12-850");
         let context = facts(&party(), &attempt);
 
         assert_eq!(context["mechanism"], "mutual-tls");
